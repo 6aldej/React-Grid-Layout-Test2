@@ -37,30 +37,20 @@ export default class Grid extends React.Component {
 
     this.onEditOpenModal = this.onEditOpenModal.bind(this);
     this.onAddItem = this.onAddItem.bind(this);
+    this.onRemoveItem = this.onRemoveItem.bind(this);
     this.onValueName = this.onValueName.bind(this);
     this.onBreakpointChange = this.onBreakpointChange.bind(this);
   }
 
   createElement(el) {
-    const removeStyle = {
-      position: "absolute",
-      right: "2px",
-      top: 0,
-      cursor: "pointer"
-    };
-
     const i = el.i;
-
     return (
       <div key={i} data-grid={el}>
-        <Widget number={i} type={el.type} name={el.name}/>
-        <span
-          className="remove"
-          style={removeStyle}
-          onClick={this.onRemoveItem.bind(this, i)}
-        >
-          x
-        </span>
+        <Widget 
+          type={el.type} 
+          name={el.name} 
+          onRemoveItem={this.onRemoveItem} 
+          i={i}/>
       </div>
     );
   }

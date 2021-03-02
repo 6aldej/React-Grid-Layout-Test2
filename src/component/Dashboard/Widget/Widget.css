@@ -5,12 +5,20 @@
 }
 
 .widget .header {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px 0;
     color: white;
     background-color: rgba(0, 0, 0, 0.294);
 }
 
 .widget .header p {
-    margin-left: 10px;
+    margin: 0;
+    font-weight: bolder;
+}
+
+.widget .header .header-remove {
+    cursor: pointer;
 }
 
 .widget .main {
