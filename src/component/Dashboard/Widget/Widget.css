@@ -1,0 +1,35 @@
+.widget {
+    height: 100%;
+    width: 100%;
+    background: red;
+}
+
+.widget .header {
+    color: white;
+    background-color: rgba(0, 0, 0, 0.294);
+}
+
+.widget .header p {
+    margin-left: 10px;
+}
+
+.widget .main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.widget .main img {
+    width: 80%;
+    height: 80%; 
+    padding:2px;
+}
+
+.widget button {
+    left: 2%;
+    bottom: 5%;
+    z-index: 3;
+    cursor: pointer;
+}

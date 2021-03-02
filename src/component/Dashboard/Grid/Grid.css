@@ -1,0 +1,11 @@
+.react-grid-layout {
+    margin: 20px;
+    
+    background-color: rgba(166, 172, 172, 0.418);
+}
+
+.Grid {
+    background-color: rgba(166, 172, 172, 0.26);
+    margin: 20px;
+    border: 2px solid;
+}

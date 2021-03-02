@@ -1,7 +1,11 @@
 import React from "react";
-import { WidthProvider, Responsive } from "react-grid-layout";
 import _ from "lodash";
-import TestComponent from '../TestComponent/TestComponent';
+import { WidthProvider, Responsive } from "react-grid-layout";
+import Widget from '../Widget/Widget';
+import AddWidget from '../AddWidget/AddWidget';
+import AddModal from '../AddModal/AddModal'
+import './Grid.css';
+
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 /**
  * This layout demonstrates how to use a grid with a dynamic number of elements.
@@ -15,30 +19,26 @@ export default class Grid extends React.Component {
 
   constructor(props) {
     super(props);
-
     this.state = {
+
       items: [],
       newCounter: 0,
 
-      main: '',
+      typeList: [
+        "График",
+        "Таблица"
+      ],
 
-      isActive: false,
-      availableCoins: [
-          "график",
-          "таблица"
-      ]
+      open: false,
+      currentType: null,
+      inputName: 'Название не задано',
 
     };
-    this.onAddItem = this.onAddItem.bind(this);
-    this.onBreakpointChange = this.onBreakpointChange.bind(this);
-  }
 
-  editIsActive() {
-    let isActive2 = !this.state.isActive
-    this.setState({
-        isActive: isActive2
-    })
-    console.log(this.state.isActive)
+    this.onEditOpenModal = this.onEditOpenModal.bind(this);
+    this.onAddItem = this.onAddItem.bind(this);
+    this.onValueName = this.onValueName.bind(this);
+    this.onBreakpointChange = this.onBreakpointChange.bind(this);
   }
 
   createElement(el) {
@@ -48,19 +48,12 @@ export default class Grid extends React.Component {
       top: 0,
       cursor: "pointer"
     };
+
     const i = el.i;
+
     return (
       <div key={i} data-grid={el}>
-        <TestComponent
-          number={i}
-          main={this.state.main}
-          style={{
-          color: "green",
-          height: "100%",
-          width: "100%",
-          background: "red"
-          }}
-        />
+        <Widget number={i} type={el.type} name={el.name}/>
         <span
           className="remove"
           style={removeStyle}
@@ -73,20 +66,24 @@ export default class Grid extends React.Component {
   }
 
   onAddItem(item) {
+    const {inputName, newCounter, cols} = this.state;
+
     this.setState({
       // Add a new item. It must have a unique key!
       items: this.state.items.concat({
-        i: "n" + this.state.newCounter,
-        x: (this.state.items.length * 1) % (this.state.cols || 4),
+        i: "n" + newCounter,
+        x: (this.state.items.length * 1) % (cols || 4),
         y: Infinity, // puts it at the bottom
         w: 1,
-        h: 3
+        h: 3,
+        type: item,
+        name: inputName
       }),
       // Increment the counter to ensure key is always unique.
-      newCounter: this.state.newCounter + 1,
-      main: item
+      newCounter: newCounter + 1,
+      open: false
     });
-    this.editIsActive()
+    this.setState({inputName:'Название не задано'})
   }
 
   // We're using the cols coming back from this to calculate where to add new items.
@@ -107,36 +104,40 @@ export default class Grid extends React.Component {
     this.setState({ items: _.reject(this.state.items, { i: i }) });
   }
 
+  onEditOpenModal(bool,item) {
+    this.setState({open: bool})
+    this.setState({currentType: item})
+  }
+
+  onValueName(e) {
+    let name = e.target.value;
+    this.setState({inputName: name})
+  }
+
   render() {
+    let {items, typeList, open, currentType}  = this.state;
+    let elements = items.map(el => this.createElement(el))
+
     return (
-      <div>
-        <div className="dropdown">
-            <button
-                onClick={()=> this.editIsActive()}
-                className="btn dropdown-toggle" 
-                >
-                    Добавить виджет
-            </button>
-            <div className={this.state.isActive ? "dropdown-menu show" : "dropdown-menu"}>
-                {
-                    this.state.availableCoins.map(item => {
-                        return(
-                            <button onClick={() =>{this.onAddItem(item)}} key={item} className="dropdown-item">
-                                {item}
-                            </button>
-                        );
-                    })
-
-                }
-            </div>
-        </div>
-
+      <div className="Grid">
+        <AddModal
+          open={open}
+          currentType={currentType}
+          onEditOpenModal={this.onEditOpenModal}
+          onAddItem={this.onAddItem}
+          onValueName={this.onValueName}
+        />
+        <AddWidget 
+          onAddItem={this.onAddItem}
+          onEditOpenModal={this.onEditOpenModal}
+          typeList={typeList}
+        />
         <ResponsiveReactGridLayout
           onLayoutChange={this.onLayoutChange}
           onBreakpointChange={this.onBreakpointChange}
           {...this.props}
         >
-          {_.map(this.state.items, el => this.createElement(el))}
+        {elements}
         </ResponsiveReactGridLayout>
       </div>
     );
