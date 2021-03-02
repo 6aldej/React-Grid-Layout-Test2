@@ -1,15 +1,15 @@
 import React from "react";
 import { WidthProvider, Responsive } from "react-grid-layout";
 import _ from "lodash";
-import TestComponent from '../TestComponent/TestComponent'
+import TestComponent from '../TestComponent/TestComponent';
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 /**
  * This layout demonstrates how to use a grid with a dynamic number of elements.
  */
-export default class Grid extends React.PureComponent {
+export default class Grid extends React.Component {
   static defaultProps = {
     className: "layout",
-    cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
+    cols: { lg: 4, md: 4, sm: 4, xs: 4, xxs: 4 },
     rowHeight: 100
   };
 
@@ -17,19 +17,28 @@ export default class Grid extends React.PureComponent {
     super(props);
 
     this.state = {
-      items: [0, 1, 2, 3, 4].map(function(i, key, list) {
-        return {
-          i: i.toString(),
-          x: i * 2,
-          y: 0,
-          w: 2,
-          h: 2
-        };
-      }),
-      newCounter: 0
+      items: [],
+      newCounter: 0,
+
+      main: '',
+
+      isActive: false,
+      availableCoins: [
+          "график",
+          "таблица"
+      ]
+
     };
     this.onAddItem = this.onAddItem.bind(this);
     this.onBreakpointChange = this.onBreakpointChange.bind(this);
+  }
+
+  editIsActive() {
+    let isActive2 = !this.state.isActive
+    this.setState({
+        isActive: isActive2
+    })
+    console.log(this.state.isActive)
   }
 
   createElement(el) {
@@ -39,17 +48,19 @@ export default class Grid extends React.PureComponent {
       top: 0,
       cursor: "pointer"
     };
+    const i = el.i;
     return (
       <div key={i} data-grid={el}>
         <TestComponent
           number={i}
+          main={this.state.main}
           style={{
           color: "green",
           height: "100%",
           width: "100%",
           background: "red"
           }}
-          />
+        />
         <span
           className="remove"
           style={removeStyle}
@@ -61,21 +72,21 @@ export default class Grid extends React.PureComponent {
     );
   }
 
-  onAddItem() {
-    /*eslint no-console: 0*/
-    console.log("adding", "n" + this.state.newCounter);
+  onAddItem(item) {
     this.setState({
       // Add a new item. It must have a unique key!
       items: this.state.items.concat({
         i: "n" + this.state.newCounter,
-        x: (this.state.items.length * 2) % (this.state.cols || 12),
+        x: (this.state.items.length * 1) % (this.state.cols || 4),
         y: Infinity, // puts it at the bottom
-        w: 2,
-        h: 2
+        w: 1,
+        h: 3
       }),
       // Increment the counter to ensure key is always unique.
-      newCounter: this.state.newCounter + 1
+      newCounter: this.state.newCounter + 1,
+      main: item
     });
+    this.editIsActive()
   }
 
   // We're using the cols coming back from this to calculate where to add new items.
@@ -99,7 +110,27 @@ export default class Grid extends React.PureComponent {
   render() {
     return (
       <div>
-        <button onClick={this.onAddItem}>Add Item</button>
+        <div className="dropdown">
+            <button
+                onClick={()=> this.editIsActive()}
+                className="btn dropdown-toggle" 
+                >
+                    Добавить виджет
+            </button>
+            <div className={this.state.isActive ? "dropdown-menu show" : "dropdown-menu"}>
+                {
+                    this.state.availableCoins.map(item => {
+                        return(
+                            <button onClick={() =>{this.onAddItem(item)}} key={item} className="dropdown-item">
+                                {item}
+                            </button>
+                        );
+                    })
+
+                }
+            </div>
+        </div>
+
         <ResponsiveReactGridLayout
           onLayoutChange={this.onLayoutChange}
           onBreakpointChange={this.onBreakpointChange}
